@@ -1,7 +1,7 @@
-import 'package:creo_touch/presentation/screens/main_page.dart';
+import 'package:creo_touch/routes/app_router.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MaterialApp(
-      home: const MainPage(),
+void main() => runApp(MaterialApp.router(
+      routerConfig: router,
       theme: ThemeData(useMaterial3: true),
     ));
