@@ -45,12 +45,11 @@ Dart/Flutter
 - 界面应在自身逻辑内处理空状态（empty states）。
 - 使用 AsyncValue 进行正确的错误处理和加载状态管理。
 
-Riverpod 相关规范
-- 使用 @riverpod 注解自动生成 Provider。
-- 优先使用 AsyncNotifierProvider 和 NotifierProvider，避免使用 StateProvider。
-- 避免 StateProvider、StateNotifierProvider 和 ChangeNotifierProvider。
-- 使用 ref.invalidate() 手动触发 Provider 更新。
-- 确保异步操作在 Widget 被销毁时正确取消，以避免内存泄漏。
+## 状态管理规范
+- 优先使用 Flutter Hooks (`flutter_hooks`) 管理组件状态
+- 仅在需要跨组件共享状态时考虑使用 Riverpod
+- 使用 Riverpod 时应遵循最小化原则，避免过度使用
+- 确保异步操作在 Widget 被销毁时正确取消，以避免内存泄漏
 
 性能优化
 - 尽可能使用 const 组件，优化 Widget 重新构建。
@@ -71,11 +70,11 @@ Riverpod 相关规范
    - 若组件需要访问全局状态（通过 Riverpod 读取或监听），使用 HookConsumerWidget。
    - 尽量避免直接使用 StatefulWidget，除非有特殊需求（如动画控制器或生命周期）。
 
-4. Riverpod 状态管理：
-   - 使用 `ref.watch()` 订阅 provider。
-   - 使用 `ref.read()` 进行一次性读取。
-   - 使用 `ref.listen()` 监听副作用（如弹窗、导航等）。
-   - 尽量保持 provider 的纯函数风格，避免在 provider 中做副作用。
+4. 状态管理优先级：
+   - 优先使用 `HookWidget` + `useState`/`useMemoized` 管理局部状态
+   - 对于需要跨组件共享的状态，考虑使用 `ChangeNotifier` + `ValueListenableBuilder`
+   - 最后考虑使用 Riverpod 进行全局状态管理
+   - 避免在状态管理中直接处理副作用
 
 UI 与样式
 - 优先使用 Flutter 内置组件，并根据需求创建自定义组件。
@@ -97,25 +96,27 @@ UI 与样式
 ### Flutter Hooks 相关
 - 优先使用 Flutter Hooks（`flutter_hooks`） 来管理组件状态，而不是 `StatefulWidget`。  
 - 当组件涉及到副作用（如订阅、动画控制器、控制器实例化等）时，优先使用 Hooks（如 `useEffect`、`useAnimationController`、`useTextEditingController`）。  
-- 当组件涉及到 Riverpod 时，使用 `HookConsumerWidget` 代替 `ConsumerWidget`，结合 `useProvider` 来读取 Provider。  
-- 避免在 Hooks 内部直接创建对象，应使用 `useMemoized` 或 `useState` 来确保对象在组件生命周期内正确管理。  
-- 对于复杂状态管理，结合 Riverpod Hooks（`hooks_riverpod`）使用，如 `useProvider` 和 `useStateNotifier` 等。  
+- 优先使用 `HookWidget` + `useState`/`useMemoized` 管理组件状态
+- 避免在 Hooks 内部直接创建对象，应使用 `useMemoized` 或 `useState` 来确保对象在组件生命周期内正确管理
+- 对于复杂状态管理，可使用 `ValueNotifier` + `ValueListenableBuilder` 组合
 
 💡 示例：
 ```dart
-class MyWidget extends HookConsumerWidget {
+class CounterWidget extends HookWidget {
+  const CounterWidget({super.key});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    final counter = useState(0);
     final controller = useTextEditingController();
-    final count = useState(0);
 
     return Column(
       children: [
         TextField(controller: controller),
-        Text('计数: ${count.value}'),
+        Text('计数: ${counter.value}'),
         ElevatedButton(
-          onPressed: () => count.value++,
-          child: Text('增加'),
+          onPressed: () => counter.value++,
+          child: const Text('增加'),
         ),
       ],
     );
@@ -125,7 +126,7 @@ class MyWidget extends HookConsumerWidget {
 
 其他注意事项
 - 使用 log 代替 print 进行调试日志输出。
-- 适当使用 Flutter Hooks 和 Riverpod Hooks。
+- 优先使用 Flutter Hooks 管理组件状态。
 - 代码行长度不超过 80 字符，多参数函数在右括号 ) 之前添加逗号 ,。
 - 枚举类型持久化到数据库时，应使用 @JsonValue(int)。
 
