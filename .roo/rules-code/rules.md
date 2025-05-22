@@ -85,6 +85,24 @@ UI 与样式
 - 优先使用 Flutter 内置组件，并根据需求创建自定义组件。
 - 使用 LayoutBuilder 或 MediaQuery 实现响应式设计。
 - 通过 ThemeData 实现全局一致的样式。
+- 所有样式必须优先使用 `themes/app_theme.dart` 中定义的主题样式。
+- 通过 Theme.of(context) 访问主题属性，例如：
+  ```dart
+  Theme.of(context).textTheme.titleLarge
+  Theme.of(context).colorScheme.primary
+  ```
+- 所有样式应优先使用 app_theme 中的主题定义，当主题无法满足需求时：
+  1. 首先考虑扩展 app_theme 中的主题定义
+  2. 在迫不得已的情况下允许使用硬编码样式，包括但不限于：
+     - 需要临时调试或快速验证UI效果
+     - 遇到主题系统无法实现的特殊视觉效果
+     - 在原型开发阶段快速迭代
+- 所有硬编码样式必须添加明确注释说明原因，例如：
+  ```dart
+  // 临时硬编码：主题系统暂不支持此特殊渐变效果
+  final gradient = LinearGradient(...);
+  ```
+- 硬编码样式应在后续版本中尽快迁移到主题系统
 - 使用 Theme.of(context).textTheme.titleLarge 代替 headline6，使用 headlineSmall 代替 headline5 等。
 
 数据模型与数据库规范
