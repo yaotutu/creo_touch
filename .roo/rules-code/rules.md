@@ -60,10 +60,22 @@ Riverpod 相关规范
 
 关键约定
 1. 使用 GoRouter 或 auto_route 进行导航和深度链接管理。
-2. 优化 Flutter 性能指标（如首屏加载时间、可交互时间）。
-3. 优先使用 StatelessWidget
-   - 对于需要依赖状态的组件，使用 ConsumerWidget 配合 Riverpod。
-   - 当同时使用 Riverpod 和 Flutter Hooks 时，使用 HookConsumerWidget。
+
+2. 优化 Flutter 性能指标：
+   - 缩短首屏加载时间。
+   - 降低 widget 重建次数。
+   - 缩短用户可交互时间（TTI）。
+
+3. 优先使用 StatelessWidget 或 HookWidget 构建组件：
+   - 若组件仅依赖局部状态（如 UI 控制、动画、计数器），使用 HookWidget。
+   - 若组件需要访问全局状态（通过 Riverpod 读取或监听），使用 HookConsumerWidget。
+   - 尽量避免直接使用 StatefulWidget，除非有特殊需求（如动画控制器或生命周期）。
+
+4. Riverpod 状态管理：
+   - 使用 `ref.watch()` 订阅 provider。
+   - 使用 `ref.read()` 进行一次性读取。
+   - 使用 `ref.listen()` 监听副作用（如弹窗、导航等）。
+   - 尽量保持 provider 的纯函数风格，避免在 provider 中做副作用。
 
 UI 与样式
 - 优先使用 Flutter 内置组件，并根据需求创建自定义组件。
