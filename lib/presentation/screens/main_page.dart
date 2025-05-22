@@ -3,13 +3,55 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 
 enum MenuItem {
-  dashboard('仪表盘', Icons.dashboard),
-  analytics('分析', Icons.analytics),
-  settings('设置', Icons.settings);
+  dashboard('', Icons.dashboard),
+  file('', Icons.insert_drive_file),
+  print('', Icons.print),
+  settings('', Icons.settings),
+  monitor('', Icons.monitor);
 
   const MenuItem(this.label, this.icon);
   final String label;
   final IconData icon;
+}
+
+class SquareIconButton extends StatelessWidget {
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const SquareIconButton({
+    super.key,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return InkWell(
+      splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+      highlightColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(8),
+      onTap: onTap,
+      child: Container(
+        width: screenHeight / 5,
+        height: screenHeight / 5,
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          icon,
+          size: 48,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
+    );
+  }
 }
 
 class MainPage extends HookWidget {
@@ -19,37 +61,28 @@ class MainPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = useState(0);
+
     return Scaffold(
       body: Row(
         children: [
-          // 左侧菜单栏 - 占1/10宽度
-          Container(
-            width: MediaQuery.of(context).size.width / 10,
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            child: ListView(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.dashboard, size: 32),
-                  title: const Text('仪表盘',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  onTap: () => navigationShell.goBranch(0),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.analytics, size: 32),
-                  title: const Text('分析',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  onTap: () => navigationShell.goBranch(1),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings, size: 32),
-                  title: const Text('设置',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  onTap: () => navigationShell.goBranch(2),
-                ),
-              ],
+          // 自适应宽度菜单栏
+          IntrinsicWidth(
+            child: Container(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              child: Column(
+                children: [
+                  for (var item in MenuItem.values)
+                    SquareIconButton(
+                      icon: item.icon,
+                      isSelected: selectedIndex.value == item.index,
+                      onTap: () {
+                        selectedIndex.value = item.index;
+                        navigationShell.goBranch(item.index);
+                      },
+                    ),
+                ],
+              ),
             ),
           ),
           // 右侧内容区域
