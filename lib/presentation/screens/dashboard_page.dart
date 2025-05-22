@@ -1,3 +1,6 @@
+import 'package:creo_touch/presentation/widgets/dashboard/bottom_panel.dart';
+import 'package:creo_touch/presentation/widgets/dashboard/left_panel.dart';
+import 'package:creo_touch/presentation/widgets/dashboard/right_panel.dart';
 import 'package:flutter/material.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -18,36 +21,12 @@ class DashboardPage extends StatelessWidget {
                   // 左侧区域 (4/10宽度)
                   Expanded(
                     flex: 4,
-                    child: Card(
-                      shape: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.outline,
-                          width: 1,
-                        ),
-                      ),
-                      child: Center(
-                          child: Text(
-                        "左区",
-                        style: Theme.of(context).textTheme.displayLarge,
-                      )),
-                    ),
+                    child: const LeftPanel(),
                   ),
                   // 右侧区域 (6/10宽度)
                   Expanded(
                     flex: 6,
-                    child: Card(
-                      shape: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.outline,
-                          width: 1,
-                        ),
-                      ),
-                      child: const Center(
-                          child: Text("右区",
-                              style: TextStyle(color: Colors.white))),
-                    ),
+                    child: const RightPanel(),
                   ),
                 ],
               ),
@@ -55,17 +34,7 @@ class DashboardPage extends StatelessWidget {
             // 下方区域 (3/10高度)
             Expanded(
               flex: 3,
-              child: Card(
-                shape: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.outline,
-                    width: 1,
-                  ),
-                ),
-                child: const Center(
-                    child: Text("下区", style: TextStyle(color: Colors.white))),
-              ),
+              child: const BottomPanel(),
             ),
           ],
         ),
