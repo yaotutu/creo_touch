@@ -51,8 +51,8 @@ Dart/Flutter
 - 使用 AsyncValue 进行正确的错误处理和加载状态管理。
 
 ## 状态管理规范
-- 优先使用 Flutter Hooks (`flutter_hooks`) 管理组件状态
-- 仅在需要跨组件共享状态时考虑使用 Riverpod
+- 优先使用 Flutter Hooks (`flutter_hooks`) 箱管理与组件生命周期强绑定的简单状态
+- 仅在需要跨组件共享或全局持久化状态（如接口数据、WebSocket更新）时考虑使用 Riverpod
 - 使用 Riverpod 时应遵循最小化原则，避免过度使用
 - 确保异步操作在 Widget 被销毁时正确取消，以避免内存泄漏
 
@@ -71,8 +71,8 @@ Dart/Flutter
    - 缩短用户可交互时间（TTI）。
 
 3. 优先使用 StatelessWidget 或 HookWidget 构建组件：
-   - 若组件仅依赖局部状态（如 UI 控制、动画、计数器），使用 HookWidget。
-   - 若组件需要访问全局状态（通过 Riverpod 读取或监听），使用 HookConsumerWidget。
+   - 若组件仅依赖与生命周期强绑定的状态（如UI控制、动画、计数器），使用 HookWidget。
+   - 若组件需要访问全局持久化状态（通过 Riverpod 读取或监听接口数据、WebSocket更新），使用 HookConsumerWidget。
    - 尽量避免直接使用 StatefulWidget，除非有特殊需求（如动画控制器或生命周期）。
 
 4. 状态管理优先级：
