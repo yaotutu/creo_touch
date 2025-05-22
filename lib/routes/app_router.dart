@@ -1,4 +1,3 @@
-import 'package:creo_touch/presentation/screens/analytics_page.dart';
 import 'package:creo_touch/presentation/screens/dashboard_page.dart';
 import 'package:creo_touch/presentation/screens/main_page.dart';
 import 'package:creo_touch/presentation/screens/settings_page.dart';
@@ -29,9 +28,19 @@ final router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/analytics',
+              path: '/file',
               pageBuilder: (context, state) => const NoTransitionPage(
-                child: AnalyticsPage(),
+                child: Placeholder(), // TODO: 替换为实际FilePage
+              ),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/print',
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: Placeholder(), // TODO: 替换为实际PrintPage
               ),
             ),
           ],
@@ -42,6 +51,16 @@ final router = GoRouter(
               path: '/settings',
               pageBuilder: (context, state) => const NoTransitionPage(
                 child: SettingsPage(),
+              ),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/monitor',
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: Placeholder(), // TODO: 替换为实际MonitorPage
               ),
             ),
           ],
