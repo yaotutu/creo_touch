@@ -13,23 +13,28 @@
 - 文件结构：导出组件（exported widget）、子组件（subwidgets）、辅助方法（helpers）、静态内容（static content）、类型定义（types）。
 
 目录文件结构规范
-	1.	services/：存放业务逻辑（计算、转换、本地存储等）。
-	2.	data/：存放远程数据交互（API 请求、数据库访问等）。
-	3.	providers/：存放状态管理（如 Riverpod）。
-	4.	presentation/screens/：存放 UI 页面。
-	5.	presentation/widgets/：存放可复用组件。
-	6.	core/：存放全局配置（常量、日志、主题等）。
-	7.	models/：存放数据模型。
-	8.	utils/：存放工具类、辅助函数。
-	9.	assets/：存放静态资源（如图片、字体等）。
-	10.	test/：存放测试代码。
-  11.	locales/：存放国际化（i18n）文件。
-  12.	themes/：存放主题配置文件。
-  13.	routes/：存放路由配置文件。
-  14.	extensions/：存放扩展方法。
-  15. notifications/：存放通知相关代码。
-  16. constants/：存放常量文件。
-  17. hooks/：存放 Flutter Hooks 相关代码。
+1.  services/：存放业务逻辑（计算、转换、本地存储等）。
+2.  data/：存放远程数据交互（API 请求、数据库访问等）。
+3.  providers/：存放状态管理（如 Riverpod）。
+4.  ui/pages/：每个页面一个文件夹，存放 UI 页面及其私有组件。
+      示例结构：
+        ui/pages/home/
+          ├── home_screen.dart              # 页面入口
+          └── widgets/
+              └── home_status_card.dart     # 页面专属组件
+5.  ui/shared_widgets/：存放多个页面共用的可复用组件。
+6.  core/：存放全局配置（常量、日志、主题等）。
+7.  models/：存放数据模型。
+8.  utils/：存放工具类、辅助函数。
+9.  assets/：存放静态资源（如图片、字体等）。
+10. test/：存放测试代码。
+11. locales/：存放国际化（i18n）文件。
+12. themes/：存放主题配置文件。
+13. routes/：存放路由配置文件。
+14. extensions/：存放扩展方法。
+15. notifications/：存放通知相关代码。
+16. constants/：存放常量文件。
+17. hooks/：存放 Flutter Hooks 相关代码。
   
 
 Dart/Flutter
