@@ -31,8 +31,14 @@ class SquareIconButton extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return InkWell(
-      splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-      highlightColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+      splashColor: Theme.of(context)
+          .colorScheme
+          .primary
+          .withAlpha(51), // 0.2 opacity ≈ 51 alpha
+      highlightColor: Theme.of(context)
+          .colorScheme
+          .primary
+          .withAlpha(26), // 0.1 opacity ≈ 26 alpha
       borderRadius: BorderRadius.circular(8),
       onTap: onTap,
       child: Container(
@@ -54,10 +60,10 @@ class SquareIconButton extends StatelessWidget {
   }
 }
 
-class MainPage extends HookWidget {
+class Main extends HookWidget {
   final StatefulNavigationShell navigationShell;
 
-  const MainPage({super.key, required this.navigationShell});
+  const Main({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {

@@ -57,7 +57,8 @@ class AppTheme {
         ),
         labelMedium: TextStyle(
           fontSize: 14,
-          color: colorScheme.onSurface.withOpacity(0.8),
+          color:
+              colorScheme.onSurface.withAlpha(204), // 0.8 opacity ≈ 204 alpha
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

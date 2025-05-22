@@ -1,6 +1,6 @@
-import 'package:creo_touch/presentation/screens/dashboard_page.dart';
-import 'package:creo_touch/presentation/screens/main_page.dart';
-import 'package:creo_touch/presentation/screens/settings_page.dart';
+import 'package:creo_touch/presentation/pages/dashboard_page/screen.dart';
+import 'package:creo_touch/presentation/pages/main_page/screen.dart';
+import 'package:creo_touch/presentation/pages/settings_page/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,15 +12,15 @@ final router = GoRouter(
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        return MainPage(navigationShell: navigationShell);
+        return Main(navigationShell: navigationShell);
       },
       branches: [
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: '/dashboard',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: DashboardPage(),
+              pageBuilder: (context, state) => NoTransitionPage(
+                child: Dashboard(),
               ),
             ),
           ],
@@ -49,8 +49,8 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: '/settings',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: SettingsPage(),
+              pageBuilder: (context, state) => NoTransitionPage(
+                child: Settings(),
               ),
             ),
           ],
