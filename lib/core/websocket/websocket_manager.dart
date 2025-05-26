@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:creo_touch/core/config.dart';
 import 'package:creo_touch/utils/logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -9,11 +10,12 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 /// 负责维护单一WebSocket连接，将原始数据广播给所有订阅者
 /// 各业务模块自行处理自己需要的数据
 final websocketManagerProvider = Provider<WebSocketManager>((ref) {
-  return WebSocketManager('ws://192.168.201.124:7125/websocket');
+  return WebSocketManager(AppConfig.baseUrl);
 });
 
 class WebSocketManager {
   final String _url;
+  final LoggerModule logger = AppLogger.module('WebSocketManager');
   late WebSocketChannel _channel;
   final List<Function(dynamic)> _listeners = [];
   bool _isConnected = false;
@@ -34,7 +36,7 @@ class WebSocketManager {
       onDone: _handleDone,
     );
     _isConnected = true;
-    AppLogger.info('WebSocket连接已建立');
+    logger.info('WebSocket连接已建立');
   }
 
   /// 发送消息到WebSocket服务器
@@ -44,7 +46,7 @@ class WebSocketManager {
         final jsonStr = jsonEncode(message);
         _channel.sink.add(jsonStr);
       } catch (e) {
-        AppLogger.error('WebSocket消息发送错误', e);
+        logger.error('WebSocket消息发送错误', error: e);
       }
     }
   }
@@ -53,17 +55,17 @@ class WebSocketManager {
   void _handleMessage(dynamic message) {
     try {
       final json = jsonDecode(message);
-      AppLogger.debug('收到WebSocket消息: ${json['method']}');
+      logger.debug('收到WebSocket消息: ${json['method']}');
       _notifyListeners(json);
     } catch (e) {
-      AppLogger.error('WebSocket消息解析错误', e);
+      logger.error('WebSocket消息解析错误', error: e);
     }
   }
 
   /// 通知所有监听者
   void _notifyListeners(dynamic data) {
     if (_listeners.isEmpty) {
-      AppLogger.warning('没有注册的监听器');
+      logger.warning('没有注册的监听器');
       return;
     }
 
@@ -71,7 +73,7 @@ class WebSocketManager {
       try {
         listener(data);
       } catch (e) {
-        AppLogger.error('监听者处理错误', e);
+        logger.error('监听者处理错误', error: e);
       }
     }
   }
@@ -80,25 +82,25 @@ class WebSocketManager {
   void addListener(Function(dynamic) listener) {
     if (!_listeners.contains(listener)) {
       _listeners.add(listener);
-      AppLogger.info('添加新的WebSocket监听器，当前总数: ${_listeners.length}');
+      logger.info('添加新的WebSocket监听器，当前总数: ${_listeners.length}');
     }
   }
 
   /// 移除数据监听器
   void removeListener(Function(dynamic) listener) {
     _listeners.remove(listener);
-    AppLogger.info('移除WebSocket监听器，剩余: ${_listeners.length}');
+    logger.info('移除WebSocket监听器，剩余: ${_listeners.length}');
   }
 
   /// 错误处理
   void _handleError(dynamic error) {
-    AppLogger.error('WebSocket连接错误', error);
+    logger.error('WebSocket连接错误', error: error);
     _isConnected = false;
   }
 
   /// 连接关闭处理
   void _handleDone() {
-    AppLogger.warning('WebSocket连接已关闭');
+    logger.warning('WebSocket连接已关闭');
     _isConnected = false;
   }
 
