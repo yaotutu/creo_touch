@@ -39,7 +39,13 @@
 
 Dart/Flutter
 - 对于不可变的 Widget，尽量使用 const 构造函数。
-- 使用 Freezed 管理不可变状态类和联合类型（union）。
+- 使用 Freezed 管理不可变状态类和联合类型（union），所有 Freezed 类必须声明为 abstract：
+  ```dart
+  @freezed
+  abstract class Model with _$Model {
+    factory Model({required String name}) = _Model;
+  }
+  ```
 - 简单的函数和方法使用箭头函数（=>）。
 - 单行的 getter 和 setter 应使用表达式体（expression body）。
 - 使用尾随逗号（trailing commas）优化代码格式，提高 git diff 可读性。
