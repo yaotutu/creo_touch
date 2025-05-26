@@ -23,7 +23,9 @@
           └── widgets/
               └── home_status_card.dart     # 页面专属组件
 5.  ui/shared_widgets/：存放多个页面共用的可复用组件。
-6.  core/：存放全局配置（常量、日志、主题等）。
+6.  core/：存放全局配置（常量、日志、主题等），包含：
+    - AppConfig: 全局应用配置（基础URL、日志级别等）
+    - logger/: 日志模块相关实现
 7.  models/：存放数据模型。
 8.  utils/：存放工具类、辅助函数。
 9.  assets/：存放静态资源（如图片、字体等）。
@@ -154,6 +156,29 @@ class CounterWidget extends HookWidget {
 ```
 
 其他注意事项
+## 日志规范
+- 使用统一的AppLogger模块记录日志，禁止直接使用print
+- 日志级别分为：debug, info, warning, error, fatal
+- 每个模块应创建自己的LoggerModule实例：
+  ```dart
+  final logger = AppLogger.module('模块名');
+  ```
+- 日志格式：[时间][模块][级别] 消息
+- 通过AppConfig.setLogLevel()动态控制日志级别
+- 错误日志必须包含error对象和stackTrace(可选)
+
+## 配置规范
+- 全局配置使用AppConfig统一管理
+- 配置项包括：
+  - baseUrl: 服务端基础地址
+  - logLevel: 日志输出级别
+- 配置应在应用启动时初始化：
+  ```dart
+  void main() async {
+    await AppConfig.initialize();
+    runApp(const MyApp());
+  }
+  ```
 - 使用 log 代替 print 进行调试日志输出。
 - 优先使用 Flutter Hooks 管理组件状态。
 - 代码行长度不超过 80 字符，多参数函数在右括号 ) 之前添加逗号 ,。
