@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:creo_touch/utils/logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -33,7 +34,7 @@ class WebSocketManager {
       onDone: _handleDone,
     );
     _isConnected = true;
-    print('WebSocket连接已建立');
+    AppLogger.info('WebSocket连接已建立');
   }
 
   /// 发送消息到WebSocket服务器
@@ -43,7 +44,7 @@ class WebSocketManager {
         final jsonStr = jsonEncode(message);
         _channel.sink.add(jsonStr);
       } catch (e) {
-        print('WebSocket消息发送错误: $e');
+        AppLogger.error('WebSocket消息发送错误', e);
       }
     }
   }
@@ -52,17 +53,17 @@ class WebSocketManager {
   void _handleMessage(dynamic message) {
     try {
       final json = jsonDecode(message);
-      print('收到WebSocket消息: ${json['method']}');
+      AppLogger.debug('收到WebSocket消息: ${json['method']}');
       _notifyListeners(json);
     } catch (e) {
-      print('WebSocket消息解析错误: $e');
+      AppLogger.error('WebSocket消息解析错误', e);
     }
   }
 
   /// 通知所有监听者
   void _notifyListeners(dynamic data) {
     if (_listeners.isEmpty) {
-      print('警告: 没有注册的监听器');
+      AppLogger.warning('没有注册的监听器');
       return;
     }
 
@@ -70,7 +71,7 @@ class WebSocketManager {
       try {
         listener(data);
       } catch (e) {
-        print('监听者处理错误: $e');
+        AppLogger.error('监听者处理错误', e);
       }
     }
   }
@@ -79,25 +80,25 @@ class WebSocketManager {
   void addListener(Function(dynamic) listener) {
     if (!_listeners.contains(listener)) {
       _listeners.add(listener);
-      print('添加新的WebSocket监听器，当前总数: ${_listeners.length}');
+      AppLogger.info('添加新的WebSocket监听器，当前总数: ${_listeners.length}');
     }
   }
 
   /// 移除数据监听器
   void removeListener(Function(dynamic) listener) {
     _listeners.remove(listener);
-    print('移除WebSocket监听器，剩余: ${_listeners.length}');
+    AppLogger.info('移除WebSocket监听器，剩余: ${_listeners.length}');
   }
 
   /// 错误处理
   void _handleError(dynamic error) {
-    print('WebSocket连接错误: $error');
+    AppLogger.error('WebSocket连接错误', error);
     _isConnected = false;
   }
 
   /// 连接关闭处理
   void _handleDone() {
-    print('WebSocket连接已关闭');
+    AppLogger.warning('WebSocket连接已关闭');
     _isConnected = false;
   }
 
