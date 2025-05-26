@@ -7,7 +7,10 @@ class RightPanel extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncPrinter = ref.watch(printerProvider);
+    final nozzleTemp = ref.watch(nozzleTempProvider);
+    final bedTemp = ref.watch(bedTempProvider);
+    final progress = ref.watch(progressProvider);
+    final status = ref.watch(statusProvider);
 
     return Card(
       shape: OutlineInputBorder(
@@ -19,39 +22,34 @@ class RightPanel extends HookConsumerWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: asyncPrinter.when(
-          data: (state) => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildTempRow(context, '喷头温度', '${state.nozzleTemp}°C'),
-              const SizedBox(height: 12),
-              _buildTempRow(context, '热床温度', '${state.bedTemp}°C'),
-              const SizedBox(height: 16),
-              LinearProgressIndicator(
-                value: state.progress / 100,
-                backgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).colorScheme.primary,
-                ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildTempRow(context, '喷头温度', '$nozzleTemp°C'),
+            const SizedBox(height: 12),
+            _buildTempRow(context, '热床温度', '$bedTemp°C'),
+            const SizedBox(height: 16),
+            LinearProgressIndicator(
+              value: progress / 100,
+              backgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerHighest,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Theme.of(context).colorScheme.primary,
               ),
-              const SizedBox(height: 8),
-              Text(
-                '进度: ${state.progress.toStringAsFixed(1)}%',
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              const SizedBox(height: 8),
-              Chip(
-                label: Text(state.status),
-                backgroundColor: state.status == '打印中'
-                    ? Theme.of(context).colorScheme.primaryContainer
-                    : Theme.of(context).colorScheme.surfaceContainerHighest,
-              ),
-            ],
-          ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) =>
-              Text('错误: $e', style: Theme.of(context).textTheme.bodyMedium),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '进度: ${progress.toStringAsFixed(1)}%',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            const SizedBox(height: 8),
+            Chip(
+              label: Text(status),
+              backgroundColor: status == '打印中'
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : Theme.of(context).colorScheme.surfaceContainerHighest,
+            ),
+          ],
         ),
       ),
     );
