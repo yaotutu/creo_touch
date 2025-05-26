@@ -1,5 +1,6 @@
 import 'package:creo_touch/core/websocket/websocket_manager.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final printStatusProvider =
     StateNotifierProvider<PrintStatusNotifier, PrintStatusState>((ref) {
@@ -33,6 +34,7 @@ class PrintStatusState {
 
 class PrintStatusNotifier extends StateNotifier<PrintStatusState> {
   final WebSocketManager _manager;
+  bool _isListening = false;
 
   PrintStatusNotifier(this._manager)
       : super(const PrintStatusState(
@@ -40,43 +42,65 @@ class PrintStatusNotifier extends StateNotifier<PrintStatusState> {
           progress: 0,
           printDuration: 0,
         )) {
-    _manager.registerHandler('print_status', _handleStatusUpdate);
+    _startListening();
   }
 
-  /// 处理打印状态更新
-  ///
-  /// 接收来自WebSocket的打印状态数据，更新状态
-  /// 数据格式: {
-  ///   'state': String,
-  ///   'print_duration': double,
-  ///   'progress': double (0-100)
-  /// }
-  void _handleStatusUpdate(dynamic data) {
-    try {
-      final status = data['state'] as String? ?? state.status;
-      final duration =
-          (data['print_duration'] as num?)?.toDouble() ?? state.printDuration;
-      final progress = (data['progress'] as num?)?.toDouble() ?? state.progress;
+  void _startListening() {
+    if (!_isListening) {
+      debugPrint('[打印状态Provider] 注册WebSocket监听');
+      _manager.addListener(_handleData);
+      _isListening = true;
 
-      // 仅当状态有变化时才更新
-      if (status != state.status ||
-          duration != state.printDuration ||
-          progress != state.progress) {
-        state = state.copyWith(
-          status: status,
-          printDuration: duration,
-          progress: progress,
-        );
-        print('打印状态更新: $status, 时长=${duration}s, 进度=$progress%'); // 调试日志
+      if (_manager.isConnected) {
+        debugPrint('[打印状态Provider] 请求初始状态数据');
+        _manager.sendMessage({
+          "jsonrpc": "2.0",
+          "method": "printer.objects.query",
+          "params": {
+            "objects": {
+              "print_stats": ["state", "print_duration", "progress"]
+            }
+          },
+          "id": 2
+        });
+      } else {
+        debugPrint('[打印状态Provider] WebSocket未连接，暂缓请求');
+      }
+    }
+  }
+
+  void _handleData(dynamic data) {
+    try {
+      if (data['method'] == 'notify_status_update') {
+        final params = data['params'] as List;
+        if (params.isNotEmpty) {
+          final statusData = params[0] as Map<String, dynamic>;
+          _updateStatus(statusData);
+        }
       }
     } catch (e) {
-      print('打印状态处理错误: $e');
+      debugPrint('打印状态处理错误: $e');
+    }
+  }
+
+  void _updateStatus(Map<String, dynamic> data) {
+    final stats = data['print_stats'];
+    if (stats != null) {
+      state = state.copyWith(
+        status: stats['state'] ?? state.status,
+        printDuration: (stats['print_duration'] as num?)?.toDouble() ??
+            state.printDuration,
+        progress: ((stats['progress'] as num?)?.toDouble() ?? 0) * 100,
+      );
     }
   }
 
   @override
   void dispose() {
-    _manager.unregisterHandler('print_status');
+    if (_isListening) {
+      _manager.removeListener(_handleData);
+      _isListening = false;
+    }
     super.dispose();
   }
 }

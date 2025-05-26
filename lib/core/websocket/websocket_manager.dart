@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+/// WebSocket全局管理类
+///
+/// 负责维护单一WebSocket连接，将原始数据广播给所有订阅者
+/// 各业务模块自行处理自己需要的数据
 final websocketManagerProvider = Provider<WebSocketManager>((ref) {
   return WebSocketManager('ws://192.168.201.124:7125/websocket');
 });
@@ -10,93 +14,97 @@ final websocketManagerProvider = Provider<WebSocketManager>((ref) {
 class WebSocketManager {
   final String _url;
   late WebSocketChannel _channel;
-  final Map<String, Function(dynamic)> _handlers = {};
+  final List<Function(dynamic)> _listeners = [];
+  bool _isConnected = false;
+
+  /// 获取当前连接状态
+  bool get isConnected => _isConnected;
 
   WebSocketManager(this._url) {
     _initConnection();
   }
 
+  /// 初始化WebSocket连接
   void _initConnection() {
     _channel = WebSocketChannel.connect(Uri.parse(_url));
-    _channel.stream.listen(_handleMessage, onError: _handleError);
+    _channel.stream.listen(
+      _handleMessage,
+      onError: _handleError,
+      onDone: _handleDone,
+    );
+    _isConnected = true;
+    print('WebSocket连接已建立');
   }
 
-  /// 处理WebSocket接收到的消息
-  ///
-  /// 解析JSON格式的消息，根据method字段分发到不同处理器
-  /// 目前主要处理notify_status_update类型的消息
+  /// 发送消息到WebSocket服务器
+  void sendMessage(dynamic message) {
+    if (_isConnected) {
+      try {
+        final jsonStr = jsonEncode(message);
+        _channel.sink.add(jsonStr);
+      } catch (e) {
+        print('WebSocket消息发送错误: $e');
+      }
+    }
+  }
+
+  /// 处理原始消息
   void _handleMessage(dynamic message) {
     try {
       final json = jsonDecode(message);
-      final method = json['method'] as String?;
-
-      if (method == 'notify_status_update') {
-        final params = json['params'] as List;
-        if (params.isNotEmpty) {
-          final data = params[0] as Map<String, dynamic>;
-          _dispatchData(data);
-          // 打印处理后的数据
-          print('Processed data: $data');
-        }
-      }
+      print('收到WebSocket消息: ${json['method']}');
+      _notifyListeners(json);
     } catch (e) {
-      print('WebSocket message parse error: $e');
+      print('WebSocket消息解析错误: $e');
     }
   }
 
-  /// 分发处理后的数据到各个处理器
-  ///
-  /// 根据数据字段判断数据类型，并调用对应的处理器
-  /// 支持温度数据、打印状态和运动数据的处理
-  void _dispatchData(Map<String, dynamic> data) {
-    try {
-      // 分发温度数据
-      if (data.containsKey('extruder') || data.containsKey('heater_bed')) {
-        final temperatureData = {
-          'nozzle': data['extruder']?['temperature'] ?? 0.0,
-          'bed': data['heater_bed']?['temperature'] ?? 0.0,
-        };
-        _callHandler('temperature', temperatureData);
-      }
+  /// 通知所有监听者
+  void _notifyListeners(dynamic data) {
+    if (_listeners.isEmpty) {
+      print('警告: 没有注册的监听器');
+      return;
+    }
 
-      // 分发打印状态数据
-      if (data.containsKey('print_stats')) {
-        final stats = data['print_stats'];
-        _callHandler('print_status', {
-          'state': stats['state'] ?? '离线',
-          'print_duration': stats['print_duration'] ?? 0.0,
-          'progress': (stats['progress'] ?? 0.0) * 100, // 转换为百分比
-        });
+    for (final listener in _listeners) {
+      try {
+        listener(data);
+      } catch (e) {
+        print('监听者处理错误: $e');
       }
-
-      // 分发运动数据
-      if (data.containsKey('motion_report')) {
-        _callHandler('motion', data['motion_report']);
-      }
-    } catch (e) {
-      print('WebSocket data dispatch error: $e');
     }
   }
 
-  void _callHandler(String type, dynamic data) {
-    if (_handlers.containsKey(type)) {
-      _handlers[type]!(data);
+  /// 添加数据监听器
+  void addListener(Function(dynamic) listener) {
+    if (!_listeners.contains(listener)) {
+      _listeners.add(listener);
+      print('添加新的WebSocket监听器，当前总数: ${_listeners.length}');
     }
   }
 
-  void registerHandler(String type, Function(dynamic) handler) {
-    _handlers[type] = handler;
+  /// 移除数据监听器
+  void removeListener(Function(dynamic) listener) {
+    _listeners.remove(listener);
+    print('移除WebSocket监听器，剩余: ${_listeners.length}');
   }
 
-  void unregisterHandler(String type) {
-    _handlers.remove(type);
-  }
-
+  /// 错误处理
   void _handleError(dynamic error) {
-    print('WebSocket error: $error');
+    print('WebSocket连接错误: $error');
+    _isConnected = false;
   }
 
+  /// 连接关闭处理
+  void _handleDone() {
+    print('WebSocket连接已关闭');
+    _isConnected = false;
+  }
+
+  /// 关闭连接
   Future<void> close() async {
     await _channel.sink.close();
+    _listeners.clear();
+    _isConnected = false;
   }
 }

@@ -58,8 +58,8 @@ Dart/Flutter
 
 ## 状态管理规范
 - 优先使用 Flutter Hooks (`flutter_hooks`) 箱管理与组件生命周期强绑定的简单状态
-- 仅在需要跨组件共享或全局持久化状态（如接口数据、WebSocket更新）时考虑使用 Riverpod
-- 使用 Riverpod 时应遵循最小化原则，避免过度使用
+- 仅在需要跨组件共享或全局持久化状态（如接口数据、WebSocket更新）时考虑使用 hooks_riverpod
+- 使用 hooks_riverpod 时应遵循最小化原则，避免过度使用
 - 确保异步操作在 Widget 被销毁时正确取消，以避免内存泄漏
 
 性能优化

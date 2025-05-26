@@ -29,22 +29,46 @@ class PrinterControlState {
 
 class PrinterControlNotifier extends StateNotifier<PrinterControlState> {
   final WebSocketManager _manager;
+  bool _isListening = false;
 
   PrinterControlNotifier(this._manager)
       : super(const PrinterControlState(
           isPaused: false,
           isPrinting: false,
         )) {
-    _manager.registerHandler('print_status', _handleControlUpdate);
+    _startListening();
   }
 
-  void _handleControlUpdate(dynamic data) {
-    final status = data['state'] as String?;
+  void _startListening() {
+    if (!_isListening) {
+      _manager.addListener(_handleData);
+      _isListening = true;
+    }
+  }
 
-    state = state.copyWith(
-      isPaused: status == 'paused',
-      isPrinting: status == 'printing',
-    );
+  void _handleData(dynamic data) {
+    try {
+      if (data['method'] == 'notify_status_update') {
+        final params = data['params'] as List;
+        if (params.isNotEmpty) {
+          final statusData = params[0] as Map<String, dynamic>;
+          _updateControlStatus(statusData);
+        }
+      }
+    } catch (e) {
+      print('控制状态处理错误: $e');
+    }
+  }
+
+  void _updateControlStatus(Map<String, dynamic> data) {
+    final stats = data['print_stats'];
+    if (stats != null) {
+      final status = stats['state'] as String?;
+      state = state.copyWith(
+        isPaused: status == 'paused',
+        isPrinting: status == 'printing',
+      );
+    }
   }
 
   Future<void> pausePrint() async {
@@ -64,7 +88,8 @@ class PrinterControlNotifier extends StateNotifier<PrinterControlState> {
 
   @override
   void dispose() {
-    _manager.unregisterHandler('print_status');
+    _manager.removeListener(_handleData);
+    _isListening = false;
     super.dispose();
   }
 }

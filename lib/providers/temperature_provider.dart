@@ -29,40 +29,72 @@ class TemperatureState {
 
 class TemperatureNotifier extends StateNotifier<TemperatureState> {
   final WebSocketManager _manager;
+  bool _isListening = false;
 
   TemperatureNotifier(this._manager)
       : super(const TemperatureState(
           nozzleTemp: 0,
           bedTemp: 0,
         )) {
-    _manager.registerHandler('temperature', _handleTemperatureUpdate);
+    _startListening();
   }
 
-  /// 处理温度数据更新
-  ///
-  /// 接收来自WebSocket的温度数据，更新状态
-  /// 数据格式: {'nozzle': double, 'bed': double}
-  void _handleTemperatureUpdate(dynamic data) {
-    try {
-      final nozzle = (data['nozzle'] as num?)?.toDouble() ?? state.nozzleTemp;
-      final bed = (data['bed'] as num?)?.toDouble() ?? state.bedTemp;
+  void _startListening() {
+    if (!_isListening) {
+      print('[温度Provider] 注册WebSocket监听');
+      _manager.addListener(_handleData);
+      _isListening = true;
 
-      // 仅当温度有变化时才更新状态
-      if (nozzle != state.nozzleTemp || bed != state.bedTemp) {
-        state = state.copyWith(
-          nozzleTemp: nozzle,
-          bedTemp: bed,
-        );
-        print('温度更新: 喷嘴=$nozzle°C, 热床=$bed°C'); // 调试日志
+      // 主动查询打印机温度初始状态
+      if (_manager.isConnected) {
+        print('[温度Provider] 请求初始温度数据');
+        _manager.sendMessage({
+          "jsonrpc": "2.0",
+          "method": "printer.objects.query",
+          "params": {
+            "objects": {
+              "extruder": ["temperature"],
+              "heater_bed": ["temperature"]
+            }
+          },
+          "id": 1
+        });
+      } else {
+        print('[温度Provider] WebSocket未连接，暂缓请求');
+      }
+    }
+  }
+
+  void _handleData(dynamic data) {
+    try {
+      if (data['method'] == 'notify_status_update') {
+        final params = data['params'] as List;
+        if (params.isNotEmpty) {
+          final statusData = params[0] as Map<String, dynamic>;
+          _updateTemperature(statusData);
+        }
       }
     } catch (e) {
       print('温度数据处理错误: $e');
     }
   }
 
+  void _updateTemperature(Map<String, dynamic> data) {
+    final nozzle = (data['extruder']?['temperature'] as num?)?.toDouble();
+    final bed = (data['heater_bed']?['temperature'] as num?)?.toDouble();
+
+    if (nozzle != null || bed != null) {
+      state = state.copyWith(
+        nozzleTemp: nozzle ?? state.nozzleTemp,
+        bedTemp: bed ?? state.bedTemp,
+      );
+    }
+  }
+
   @override
   void dispose() {
-    _manager.unregisterHandler('temperature');
+    _manager.removeListener(_handleData);
+    _isListening = false;
     super.dispose();
   }
 }
