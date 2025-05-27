@@ -8,34 +8,44 @@ class MoonrakerApi {
 
   /// 获取服务器信息
   Future<Map<String, dynamic>> getServerInfo() async {
-    return _client.sendRequest(path: '/server/info', method: 'server.info');
+    return _client.sendRequest(
+      path: '/server/info',
+      method: 'server.info',
+      httpMethod: 'GET',
+    );
   }
 
   /// 获取打印机状态
   Future<Map<String, dynamic>> getPrinterStatus() async {
     return _client.sendRequest(
-        path: '/printer/objects/query',
-        method: 'printer.objects.query',
-        params: {
-          'objects': {'print_stats': null, 'toolhead': null}
-        });
+      path: '/printer/objects/query',
+      method: 'printer.objects.query',
+      httpMethod: 'POST',
+      params: {
+        'objects': {'print_stats': null, 'toolhead': null}
+      },
+    );
   }
 
   /// 发送GCode指令
   Future<Map<String, dynamic>> sendGCode(String gcode) async {
     return _client.sendRequest(
-        path: '/printer/gcode/script',
-        method: 'printer.gcode.script',
-        params: {'script': gcode});
+      path: '/printer/gcode/script',
+      method: 'printer.gcode.script',
+      httpMethod: 'POST',
+      params: {'script': gcode},
+    );
   }
 
   /// 获取温度数据
   Future<Map<String, dynamic>> getTemperature() async {
     return _client.sendRequest(
-        path: '/printer/objects/query',
-        method: 'printer.objects.query',
-        params: {
-          'objects': {'heater_bed': null, 'extruder': null}
-        });
+      path: '/printer/objects/query',
+      method: 'printer.objects.query',
+      httpMethod: 'POST',
+      params: {
+        'objects': {'heater_bed': null, 'extruder': null}
+      },
+    );
   }
 }

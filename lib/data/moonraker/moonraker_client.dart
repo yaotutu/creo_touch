@@ -13,6 +13,7 @@ class MoonrakerClient {
   Future<Map<String, dynamic>> sendRequest({
     required String path,
     required String method,
+    required String httpMethod, // 'GET' or 'POST'
     Map<String, dynamic>? params,
     int? id,
   }) async {
@@ -26,25 +27,17 @@ class MoonrakerClient {
 
     try {
       _logger.debug('发送请求: $request');
-      // Moonraker HTTP API 不需要 /websocket 前缀
-      final cleanPath = path.startsWith('/websocket')
-          ? path.substring('/websocket'.length)
-          : path;
+      final response = await _client.request(
+        path,
+        method: httpMethod,
+        data: httpMethod == 'POST' ? request : null,
+      );
 
-      // /server/info 使用 GET 请求，其他使用 POST
-      if (method == 'server.info') {
-        // 直接HTTP请求不验证ID
-        final response = await _client.get(cleanPath);
-        return response;
-      } else {
-        // JSON-RPC请求需要验证
-        final response = await _client.post(
-          cleanPath,
-          data: request,
-        );
+      if (httpMethod == 'POST') {
         _validateResponse(response, requestId);
         return response['result'] as Map<String, dynamic>;
       }
+      return response;
     } catch (e) {
       _logger.error('Moonraker请求失败', error: e);
       rethrow;
