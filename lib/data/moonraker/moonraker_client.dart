@@ -13,7 +13,7 @@ class MoonrakerClient {
   Future<Map<String, dynamic>> sendRequest({
     required String path,
     required String method,
-    required String httpMethod, // 'GET' or 'POST'
+    required HttpMethod httpMethod,
     Map<String, dynamic>? params,
     int? id,
   }) async {
@@ -30,10 +30,10 @@ class MoonrakerClient {
       final response = await _client.request(
         path,
         method: httpMethod,
-        data: httpMethod == 'POST' ? request : null,
+        data: httpMethod == HttpMethod.post ? request : null,
       );
 
-      if (httpMethod == 'POST') {
+      if (httpMethod == HttpMethod.post) {
         _validateResponse(response, requestId);
         return response['result'] as Map<String, dynamic>;
       }

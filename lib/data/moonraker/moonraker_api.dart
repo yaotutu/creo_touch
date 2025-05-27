@@ -1,4 +1,5 @@
 import 'package:creo_touch/data/moonraker/moonraker_client.dart';
+import 'package:creo_touch/data/network/network_client.dart';
 
 /// Moonraker API 业务封装
 class MoonrakerApi {
@@ -11,7 +12,7 @@ class MoonrakerApi {
     return _client.sendRequest(
       path: '/server/info',
       method: 'server.info',
-      httpMethod: 'GET',
+      httpMethod: HttpMethod.get,
     );
   }
 
@@ -20,7 +21,7 @@ class MoonrakerApi {
     return _client.sendRequest(
       path: '/printer/objects/query',
       method: 'printer.objects.query',
-      httpMethod: 'POST',
+      httpMethod: HttpMethod.post,
       params: {
         'objects': {'print_stats': null, 'toolhead': null}
       },
@@ -32,7 +33,7 @@ class MoonrakerApi {
     return _client.sendRequest(
       path: '/printer/gcode/script',
       method: 'printer.gcode.script',
-      httpMethod: 'POST',
+      httpMethod: HttpMethod.post,
       params: {'script': gcode},
     );
   }
@@ -42,7 +43,7 @@ class MoonrakerApi {
     return _client.sendRequest(
       path: '/printer/objects/query',
       method: 'printer.objects.query',
-      httpMethod: 'POST',
+      httpMethod: HttpMethod.post,
       params: {
         'objects': {'heater_bed': null, 'extruder': null}
       },

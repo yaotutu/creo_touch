@@ -1,12 +1,21 @@
 import 'package:creo_touch/utils/logger.dart';
 import 'package:dio/dio.dart';
 
+/// HTTP 请求方法枚举
+enum HttpMethod {
+  get('GET'),
+  post('POST');
+
+  final String value;
+  const HttpMethod(this.value);
+}
+
 /// 网络请求客户端抽象层
 abstract class NetworkClient {
   /// 通用请求方法
   Future<Map<String, dynamic>> request(
     String path, {
-    String method = 'GET',
+    HttpMethod method = HttpMethod.get,
     Map<String, dynamic>? data,
     Map<String, dynamic>? queryParameters,
   });
@@ -16,14 +25,14 @@ abstract class NetworkClient {
     String path, {
     Map<String, dynamic>? queryParameters,
   }) =>
-      request(path, method: 'GET', queryParameters: queryParameters);
+      request(path, method: HttpMethod.get, queryParameters: queryParameters);
 
   /// POST请求快捷方式
   Future<Map<String, dynamic>> post(
     String path, {
     Map<String, dynamic>? data,
   }) =>
-      request(path, method: 'POST', data: data);
+      request(path, method: HttpMethod.post, data: data);
 
   Future<void> close();
 }
@@ -43,7 +52,7 @@ class DioNetworkClient implements NetworkClient {
   @override
   Future<Map<String, dynamic>> request(
     String path, {
-    String method = 'GET',
+    HttpMethod method = HttpMethod.get,
     Map<String, dynamic>? data,
     Map<String, dynamic>? queryParameters,
   }) async {
@@ -52,7 +61,7 @@ class DioNetworkClient implements NetworkClient {
         path,
         data: data,
         queryParameters: queryParameters,
-        options: Options(method: method),
+        options: Options(method: method.value),
       );
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
@@ -66,14 +75,14 @@ class DioNetworkClient implements NetworkClient {
     String path, {
     Map<String, dynamic>? queryParameters,
   }) =>
-      request(path, method: 'GET', queryParameters: queryParameters);
+      request(path, method: HttpMethod.get, queryParameters: queryParameters);
 
   @override
   Future<Map<String, dynamic>> post(
     String path, {
     Map<String, dynamic>? data,
   }) =>
-      request(path, method: 'POST', data: data);
+      request(path, method: HttpMethod.post, data: data);
 
   @override
   Future<void> close() async {
