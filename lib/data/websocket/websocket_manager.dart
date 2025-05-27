@@ -10,7 +10,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 /// 负责维护单一WebSocket连接，将原始数据广播给所有订阅者
 /// 各业务模块自行处理自己需要的数据
 final websocketManagerProvider = Provider<WebSocketManager>((ref) {
-  return WebSocketManager(AppConfig.baseUrl);
+  return WebSocketManager(AppConfig.websocketBaseUrl);
 });
 
 class WebSocketManager {

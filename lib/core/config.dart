@@ -3,15 +3,22 @@ import 'package:flutter/foundation.dart';
 
 /// 全局应用配置
 class AppConfig {
-  static String _baseUrl = 'ws://192.168.201.124:7125/websocket';
+  static String _httpBaseUrl = 'http://192.168.201.124:7125';
+  static String _websocketBaseUrl = 'ws://192.168.201.124:7125/websocket';
   static LogLevel _logLevel = kReleaseMode ? LogLevel.warning : LogLevel.debug;
 
   /// 获取基础URL
-  static String get baseUrl => _baseUrl;
+  static String get httpBaseUrl => _httpBaseUrl;
+  static String get websocketBaseUrl => _websocketBaseUrl;
 
-  /// 设置基础URL
-  static void setBaseUrl(String url) {
-    _baseUrl = url;
+  /// 设置HTTP基础URL
+  static void setHttpBaseUrl(String url) {
+    _httpBaseUrl = url;
+  }
+
+  /// 设置WebSocket基础URL
+  static void setWebsocketBaseUrl(String url) {
+    _websocketBaseUrl = url;
   }
 
   /// 获取当前日志级别

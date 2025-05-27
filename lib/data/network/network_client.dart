@@ -3,6 +3,11 @@ import 'package:dio/dio.dart';
 
 /// 网络请求客户端抽象层
 abstract class NetworkClient {
+  Future<Map<String, dynamic>> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  });
+
   Future<Map<String, dynamic>> post(
     String path, {
     Map<String, dynamic>? data,
@@ -24,6 +29,23 @@ class DioNetworkClient implements NetworkClient {
   }
 
   @override
+  Future<Map<String, dynamic>> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      final response = await _dio.get(
+        path,
+        queryParameters: queryParameters,
+      );
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      _logger.error('GET请求失败: ${e.message}', error: e);
+      throw Exception('请求失败: ${e.response?.statusCode}');
+    }
+  }
+
+  @override
   Future<Map<String, dynamic>> post(
     String path, {
     Map<String, dynamic>? data,
@@ -35,7 +57,7 @@ class DioNetworkClient implements NetworkClient {
       );
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
-      _logger.error('网络请求失败: ${e.message}', error: e);
+      _logger.error('POST请求失败: ${e.message}', error: e);
       throw Exception('请求失败: ${e.response?.statusCode}');
     }
   }

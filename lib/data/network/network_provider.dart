@@ -4,5 +4,5 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'network_client.dart';
 
 final networkClientProvider = Provider<NetworkClient>((ref) {
-  return DioNetworkClient(AppConfig.baseUrl);
+  return DioNetworkClient(AppConfig.httpBaseUrl);
 });

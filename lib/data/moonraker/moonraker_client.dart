@@ -26,13 +26,25 @@ class MoonrakerClient {
 
     try {
       _logger.debug('发送请求: $request');
-      final response = await _client.post(
-        path,
-        data: request,
-      );
+      // Moonraker HTTP API 不需要 /websocket 前缀
+      final cleanPath = path.startsWith('/websocket')
+          ? path.substring('/websocket'.length)
+          : path;
 
-      _validateResponse(response, requestId);
-      return response['result'] as Map<String, dynamic>;
+      // /server/info 使用 GET 请求，其他使用 POST
+      if (method == 'server.info') {
+        // 直接HTTP请求不验证ID
+        final response = await _client.get(cleanPath);
+        return response;
+      } else {
+        // JSON-RPC请求需要验证
+        final response = await _client.post(
+          cleanPath,
+          data: request,
+        );
+        _validateResponse(response, requestId);
+        return response['result'] as Map<String, dynamic>;
+      }
     } catch (e) {
       _logger.error('Moonraker请求失败', error: e);
       rethrow;
