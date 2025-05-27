@@ -1,4 +1,4 @@
-import 'package:creo_touch/core/websocket/websocket_manager.dart';
+import 'package:creo_touch/data/websocket/websocket_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final temperatureProvider =

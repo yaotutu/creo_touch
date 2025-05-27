@@ -1,8 +1,8 @@
-import 'package:creo_touch/core/json_rpc/json_rpc_client.dart';
+import 'package:creo_touch/data/moonraker/moonraker_client.dart';
 
 /// Moonraker API 业务封装
 class MoonrakerApi {
-  final JsonRpcClient _client;
+  final MoonrakerClient _client;
 
   MoonrakerApi(this._client);
 

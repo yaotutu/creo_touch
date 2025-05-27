@@ -1,13 +1,13 @@
-import 'package:creo_touch/core/network/network_client.dart';
+import 'package:creo_touch/data/network/network_client.dart';
 import 'package:creo_touch/utils/logger.dart';
 
-/// JSON-RPC 2.0 客户端
-class JsonRpcClient {
-  static final LoggerModule _logger = AppLogger.module('JsonRpcClient');
+/// Moonraker JSON-RPC 2.0 客户端
+class MoonrakerClient {
+  static final LoggerModule _logger = AppLogger.module('MoonrakerClient');
   final NetworkClient _client;
   int _requestId = 0;
 
-  JsonRpcClient(this._client);
+  MoonrakerClient(this._client);
 
   /// 发送JSON-RPC请求
   Future<Map<String, dynamic>> sendRequest({
@@ -34,7 +34,7 @@ class JsonRpcClient {
       _validateResponse(response, requestId);
       return response['result'] as Map<String, dynamic>;
     } catch (e) {
-      _logger.error('JSON-RPC请求失败', error: e);
+      _logger.error('Moonraker请求失败', error: e);
       rethrow;
     }
   }
