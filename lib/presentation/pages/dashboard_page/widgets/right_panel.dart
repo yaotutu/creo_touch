@@ -36,7 +36,8 @@ class RightPanel extends HookConsumerWidget {
               _buildInfoRow(
                   context, '服务器版本', info['result']?['software_version']),
               const SizedBox(height: 12),
-              _buildInfoRow(context, 'API版本', info['result']?['api_version']),
+              _buildInfoRow(
+                  context, 'API版本', info['result']?['api_version_string']),
               const SizedBox(height: 12),
               _buildInfoRow(context, '主机名', info['result']?['hostname']),
               const SizedBox(height: 12),
