@@ -60,10 +60,10 @@ class SquareIconButton extends StatelessWidget {
   }
 }
 
-class Main extends HookWidget {
+class MainScreen extends HookWidget {
   final StatefulNavigationShell navigationShell;
 
-  const Main({super.key, required this.navigationShell});
+  const MainScreen({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {

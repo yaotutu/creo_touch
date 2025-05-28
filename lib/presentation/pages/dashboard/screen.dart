@@ -1,10 +1,10 @@
-import 'package:creo_touch/presentation/pages/dashboard_page/widgets/bottom_panel.dart';
-import 'package:creo_touch/presentation/pages/dashboard_page/widgets/left_panel.dart';
-import 'package:creo_touch/presentation/pages/dashboard_page/widgets/right_panel.dart';
+import 'package:creo_touch/presentation/pages/dashboard/widgets/bottom_panel.dart';
+import 'package:creo_touch/presentation/pages/dashboard/widgets/left_panel.dart';
+import 'package:creo_touch/presentation/pages/dashboard/widgets/right_panel.dart';
 import 'package:flutter/material.dart';
 
-class Dashboard extends StatelessWidget {
-  const Dashboard({super.key});
+class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
