@@ -67,7 +67,8 @@ class Main extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedIndex = useState(0);
+    // 直接使用 navigationShell 管理的当前索引
+    final currentIndex = navigationShell.currentIndex;
 
     return Scaffold(
       body: Row(
@@ -81,11 +82,8 @@ class Main extends HookWidget {
                   for (var item in MenuItem.values)
                     SquareIconButton(
                       icon: item.icon,
-                      isSelected: selectedIndex.value == item.index,
-                      onTap: () {
-                        selectedIndex.value = item.index;
-                        navigationShell.goBranch(item.index);
-                      },
+                      isSelected: currentIndex == item.index,
+                      onTap: () => navigationShell.goBranch(item.index),
                     ),
                 ],
               ),

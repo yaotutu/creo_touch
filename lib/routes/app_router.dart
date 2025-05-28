@@ -8,7 +8,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/dashboard',
+  initialLocation: '/print', // 默认选中打印控制页面
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
