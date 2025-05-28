@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 enum MenuItem {
   dashboard('', Icons.dashboard),
   file('', Icons.insert_drive_file),
-  print('', Icons.print),
+  control('', Icons.print),
   settings('', Icons.settings),
   monitor('', Icons.monitor);
 

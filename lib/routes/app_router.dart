@@ -1,3 +1,4 @@
+import 'package:creo_touch/presentation/pages/control/screen.dart';
 import 'package:creo_touch/presentation/pages/dashboard/screen.dart';
 import 'package:creo_touch/presentation/pages/main/screen.dart';
 import 'package:creo_touch/presentation/pages/settings/screen.dart';
@@ -8,7 +9,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/print', // 默认选中打印控制页面
+  initialLocation: '/control', // 默认选中打印机控制页面
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
@@ -38,9 +39,9 @@ final router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/print',
+              path: '/control',
               pageBuilder: (context, state) => const NoTransitionPage(
-                child: Placeholder(), // TODO: 替换为实际PrintPage
+                child: PrinterControlScreen(),
               ),
             ),
           ],
