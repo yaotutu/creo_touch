@@ -33,11 +33,11 @@ class SquareIconButton extends StatelessWidget {
     return InkWell(
       splashColor: Theme.of(context)
           .colorScheme
-          .primary
+          .onSurface
           .withAlpha(51), // 0.2 opacity ≈ 51 alpha
       highlightColor: Theme.of(context)
           .colorScheme
-          .primary
+          .onSurface
           .withAlpha(26), // 0.1 opacity ≈ 26 alpha
       borderRadius: BorderRadius.circular(8),
       onTap: onTap,
@@ -53,7 +53,9 @@ class SquareIconButton extends StatelessWidget {
         child: Icon(
           icon,
           size: 48,
-          color: Theme.of(context).colorScheme.onSurface,
+          color: isSelected
+              ? Theme.of(context).colorScheme.onPrimaryContainer
+              : Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

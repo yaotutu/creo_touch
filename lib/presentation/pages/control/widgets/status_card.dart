@@ -38,7 +38,7 @@ class StatusCard extends HookWidget {
                   children: [
                     Text(
                       secondaryText,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
@@ -48,7 +48,7 @@ class StatusCard extends HookWidget {
                     const SizedBox(height: 4),
                     Text(
                       primaryText,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme.of(context).textTheme.headlineLarge,
                     ),
                   ],
                 ),

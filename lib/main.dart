@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: router,
-      theme: AppTheme.getTheme(Colors.green),
+      theme: AppTheme.getTheme(Color(0xFF0051A2)),
     );
   }
 }

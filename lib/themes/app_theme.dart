@@ -4,6 +4,7 @@ class AppTheme {
   static ThemeData getTheme(Color primaryColor) {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: primaryColor,
+      // brightness: Brightness.dark,
     );
 
     return ThemeData(
@@ -59,7 +60,7 @@ class AppTheme {
         ),
       ),
       cardTheme: CardTheme(
-        color: colorScheme.surface,
+        color: colorScheme.surfaceContainerHighest,
         margin: const EdgeInsets.all(12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
