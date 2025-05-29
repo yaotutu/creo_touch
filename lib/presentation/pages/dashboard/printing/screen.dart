@@ -1,6 +1,6 @@
-import 'package:creo_touch/presentation/pages/dashboard/widgets/bottom_panel.dart';
-import 'package:creo_touch/presentation/pages/dashboard/widgets/left_panel.dart';
-import 'package:creo_touch/presentation/pages/dashboard/widgets/right_panel.dart';
+import 'package:creo_touch/presentation/pages/dashboard/printing/widgets/bottom_panel.dart';
+import 'package:creo_touch/presentation/pages/dashboard/printing/widgets/left_panel.dart';
+import 'package:creo_touch/presentation/pages/dashboard/printing/widgets/right_panel.dart';
 import 'package:flutter/material.dart';
 
 class PrintingScreen extends StatelessWidget {
