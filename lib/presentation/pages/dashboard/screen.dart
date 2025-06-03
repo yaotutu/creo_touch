@@ -10,7 +10,7 @@ class DashboardScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: 替换为实际的打印状态提供者
-    final isPrinting = useState(true);
+    final isPrinting = useState(false);
 
     return isPrinting.value
         ? const PrintingScreen()
